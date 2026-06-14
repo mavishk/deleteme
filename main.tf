@@ -36,5 +36,25 @@ resource "aws_instance" "ec2_ap_south" {
   }
 }
 
+#create a datasource to get the latest Amazon Linux 2 AMI ID in the ap-south-1 region
+data "aws_ami" "latest_amazon_linux" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+}
+#using datasource to read the latest Amazon Linux 2 AMI ID and create an EC2 instance in the ap-south-1 region
+resource "aws_instance" "my_second_ec2" {
+  ami           = data.aws_ami.latest_amazon_linux.id
+  instance_type = var.instance_type
 
+  tags = {
+    Name = var.instance_name
+  }
+}
 
